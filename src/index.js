@@ -1,37 +1,74 @@
-class Rosetta {
-    constructor({ data, language = 'en', selector = '[data-translate]' }) {
+export default class Rosetta {
+    constructor({
+        data,
+        language = 'it',
+        defaultLanguage = 'en',
+        selector = '[data-rosetta]',
+    }) {
         this.config = {
             data,
             language,
+            defaultLanguage,
             selector: [...document.querySelectorAll(selector)],
         };
 
-        this.init();
+        this.translatePage(this.config.language);
     }
 
     translate(element, language) {
-        console.log(language);
-        const values = element.getAttribute('data-tr')?.split(/\s/g);
-        const attributes = element?.getAttribute('data-tr-attr')?.split(/\s/g);
+        const values = element
+            .getAttribute('data-rosetta')
+            ?.split(/\s/g)
+            .filter((val) => val);
+
+        const attributes = element
+            ?.getAttribute('data-rosetta-attr')
+            ?.split(/\s/g)
+            .filter((val) => val);
 
         if (attributes && values.length != attributes.length) {
-            console.warn('provide the same length of values and attributes');
+            console.warn(
+                '🪦 Rosetta: provide the same length of values and attributes 🪦'
+            );
         } else if (!attributes && values.length > 1) {
             console.warn(
-                "provide only one value if attributes aren't available"
+                "🪦 Rosetta: provide only one value if attributes aren't available 🪦"
             );
         } else {
-            values.forEach((value) => {});
+            values.forEach((value, valueIndex) => {
+                const parentLanguage =
+                    this.config.data[language].parent ||
+                    this.config.defaultLanguage;
+
+                const elementValue =
+                    this.config.data[language][value] != undefined
+                        ? this.config.data[language][value]
+                        : this.config.data[parentLanguage][value];
+
+                const elementAttribute =
+                    attributes &&
+                    attributes[valueIndex] != 'text' &&
+                    attributes[valueIndex] != ''
+                        ? attributes[valueIndex]
+                        : 'innerHTML';
+
+                if (elementAttribute === 'innerHTML') {
+                    element[elementAttribute] = elementValue;
+                } else {
+                    element.setAttribute(elementAttribute, elementValue);
+                }
+            });
         }
     }
 
-    init() {
-        this.config.selector.forEach((element) => {
-            this._translate(element, this.config.language);
+    translatePage(language) {
+        const elements =
+            typeof this.config.selector === 'string'
+                ? [...document.querySelectorAll(this.config.selector)]
+                : this.config.selector;
+
+        elements.forEach((element) => {
+            this.translate(element, language);
         });
     }
 }
-
-new Rosetta({
-    data: TRANSLATIONS,
-});
