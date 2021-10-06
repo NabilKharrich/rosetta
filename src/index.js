@@ -5,7 +5,6 @@ class Rosetta {
             language,
             selector: [...document.querySelectorAll(selector)],
         };
-        console.log('test');
 
         this.init();
     }
