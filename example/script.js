@@ -17,6 +17,6 @@ const data = {
 const rosetta = new Rosetta({
     selector: '[data-rosetta]',
     data,
-    language: 'fr',
+    language: 'en',
     defaultLanguage: 'en',
 });

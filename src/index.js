@@ -16,49 +16,51 @@ export default class Rosetta {
     }
 
     translate(element, language) {
-        const values = element
-            .getAttribute('data-rosetta')
-            ?.split(/\s/g)
-            .filter((val) => val);
+        const elementData = (function () {
+            try {
+                return JSON.parse(element.getAttribute('data-rosetta'));
+            } catch {
+                return element.getAttribute('data-rosetta');
+            }
+        })();
 
-        const attributes = element
-            ?.getAttribute('data-rosetta-attr')
-            ?.split(/\s/g)
-            .filter((val) => val);
+        const values =
+            typeof elementData === 'string'
+                ? [elementData]
+                : Object.values(elementData);
 
-        if (attributes && values.length != attributes.length) {
-            console.warn(
-                '🪦 Rosetta: provide the same length of values and attributes 🪦'
-            );
-        } else if (!attributes && values.length > 1) {
-            console.warn(
-                "🪦 Rosetta: provide only one value if attributes aren't available 🪦"
-            );
-        } else {
-            values.forEach((value, valueIndex) => {
-                const parentLanguage =
-                    this.config.data[language].parent ||
-                    this.config.defaultLanguage;
+        const attributes =
+            typeof elementData === 'string'
+                ? ['innerHTML']
+                : Object.keys(elementData);
 
-                const elementValue =
-                    this.config.data[language][value] != undefined
-                        ? this.config.data[language][value]
-                        : this.config.data[parentLanguage][value];
+        values.forEach((value, valueIndex) => {
+            const parentLanguage =
+                this.config.data[language].parent ||
+                this.config.defaultLanguage;
 
-                const elementAttribute =
-                    attributes &&
-                    attributes[valueIndex] != 'text' &&
-                    attributes[valueIndex] != ''
-                        ? attributes[valueIndex]
-                        : 'innerHTML';
+            const elementValue =
+                this.config.data[language][value] != undefined
+                    ? this.config.data[language][value]
+                    : this.config.data[parentLanguage][value];
 
-                if (elementAttribute === 'innerHTML') {
-                    element[elementAttribute] = elementValue;
-                } else {
-                    element.setAttribute(elementAttribute, elementValue);
-                }
-            });
-        }
+            const elementAttribute =
+                attributes &&
+                attributes[valueIndex] != 'text' &&
+                attributes[valueIndex] != ''
+                    ? attributes[valueIndex]
+                    : 'innerHTML';
+
+            if (!elementValue) {
+                console.warn(
+                    `🪦 Rosetta: Value ${value.toUpperCase()} not found 🪦`
+                );
+            } else if (elementAttribute === 'innerHTML') {
+                element[elementAttribute] = elementValue;
+            } else {
+                element.setAttribute(elementAttribute, elementValue);
+            }
+        });
     }
 
     translatePage(language) {
