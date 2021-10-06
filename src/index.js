@@ -1,18 +1,40 @@
 export default class Rosetta {
     constructor({
-        data,
+        data = undefined,
         language = 'it',
         defaultLanguage = 'en',
+        detectLanguage = false,
         selector = '[data-rosetta]',
     }) {
         this.config = {
             data,
             language,
             defaultLanguage,
+            detectLanguage,
+            browserLanguage: null,
             selector: [...document.querySelectorAll(selector)],
         };
 
-        this.translatePage(this.config.language);
+        if (!this.config.data) {
+            console.warn(`🪦 Rosetta: Provide data for translations 🪦`);
+        } else if (this.config.detectLanguage) {
+            this.detectLanguage();
+        } else {
+            this.translatePage(this.config.language);
+        }
+    }
+
+    detectLanguage() {
+        this.config.browserLanguage = navigator.language.split('-')[0];
+
+        if (!this.config[this.config.browserLanguage]) {
+            console.warn(
+                `🪦 Rosetta: Browser language not available, the page has been translated with the preferred language 🪦`
+            );
+            this.translatePage(this.config.language);
+        } else {
+            this.translatePage(this.config.browserLanguage);
+        }
     }
 
     translate(element, language) {

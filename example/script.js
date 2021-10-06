@@ -19,4 +19,5 @@ const rosetta = new Rosetta({
     data,
     language: 'en',
     defaultLanguage: 'en',
+    detectLanguage: true,
 });
