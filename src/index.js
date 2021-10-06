@@ -1,7 +1,7 @@
 export default class Rosetta {
     constructor({
         data = undefined,
-        language = 'it',
+        language = 'en',
         defaultLanguage = 'en',
         detectLanguage = false,
         selector = '[data-rosetta]',
@@ -37,7 +37,7 @@ export default class Rosetta {
         }
     }
 
-    translate(element, language) {
+    replaceValues(element, language) {
         const elementData = (function () {
             try {
                 return JSON.parse(element.getAttribute('data-rosetta'));
@@ -92,7 +92,11 @@ export default class Rosetta {
                 : this.config.selector;
 
         elements.forEach((element) => {
-            this.translate(element, language);
+            this.replaceValues(element, language);
         });
+    }
+
+    translateElement(element, language) {
+        this.replaceValues(element, language);
     }
 }
