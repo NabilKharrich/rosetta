@@ -73,7 +73,7 @@ export default class Rosetta {
                     ? attributes[valueIndex]
                     : 'innerHTML';
 
-            if (!elementValue) {
+            if (elementValue === undefined) {
                 console.warn(
                     `🪦 Rosetta: Value ${value.toUpperCase()} not found 🪦`
                 );
