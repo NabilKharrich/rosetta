@@ -53,7 +53,7 @@ Note that by using 'text' as position, Rosetta will use the value to replace the
 <a data-rosetta='{"href": "anchorHref", "text": "anchorLabel"}'></a>
 ```
 
-## Main language, default and automatic browser detection
+## Main language and automatic browser detection
 
 The options allow you to select in which language you can translate your page on init and if you want to automatically try to detect the language from the browser. If the automatic detection fails or if the language detected isn't present in your translations object, Rosetta will fall back to your selected language.
 
